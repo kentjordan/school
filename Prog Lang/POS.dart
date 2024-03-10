@@ -5,7 +5,7 @@ class Item {
   String? description;
   int? quantity;
   String? unitMeasurement;
-  String? unitPrice;
+  double? unitPrice;
 
   Item(
       {this.id,
@@ -15,8 +15,11 @@ class Item {
       this.unitPrice});
 
   printItem() {
-    print(
-        """ID: ${this.id}  |  Description: ${this.description}  |  Quantity: ${this.quantity}  |  Unit of Measurement: ${this.unitMeasurement}  |  Unit Price: ${this.unitPrice}""");
+    return """ID: ${this.id}
+    Description: ${this.description}
+    Quantity: ${this.quantity}
+    Unit of Measurement: ${this.unitMeasurement}
+    Unit Price: ${this.unitPrice}""";
   }
 }
 
@@ -35,23 +38,31 @@ List<int> groupById(List<Item> items) {
   return groups;
 }
 
-List<Map<String, int>> countItem(List<Item> items) {
-  List<Map<String, int>> itemsCount = [];
+List<Map<String, dynamic>> countItem(List<Item> items) {
+  List<Map<String, dynamic>> itemsCount = [];
 
   for (int id in groupById(items)) {
     int count = 0;
+
     for (Item item in items) {
       if (id == item.id) {
         count++;
       }
     }
-    itemsCount.add({"id": id, "count": count});
+
+    for (Item item in items) {
+      if (id == item.id) {
+        itemsCount.add({"item": item, "count": count});
+        break;
+      }
+    }
   }
 
   return itemsCount;
 }
 
 void main() {
+  print("========== INPUT ==========");
   stdout.write("Total Items: ");
 
   final itemsCount = int.parse(stdin.readLineSync()!);
@@ -63,27 +74,32 @@ void main() {
 
     stdout.write("ID: ");
     final id = int.parse(stdin.readLineSync()!);
-    // stdout.write("Description: ");
-    // final description = stdin.readLineSync();
-    // stdout.write("Quantity: ");
-    // final quantity = int.parse(stdin.readLineSync()!);
-    // stdout.write("Unit of Measurement: ");
-    // final unitMeasurement = stdin.readLineSync();
-    // stdout.write("Unit of Price: ");
-    // final unitPrice = stdin.readLineSync();
+    stdout.write("Description: ");
+    final description = stdin.readLineSync();
+    stdout.write("Quantity: ");
+    final quantity = int.parse(stdin.readLineSync()!);
+    stdout.write("Unit of Measurement: ");
+    final unitMeasurement = stdin.readLineSync();
+    stdout.write("Unit Price: ");
+    final unitPrice = double.parse(stdin.readLineSync()!);
 
     Item item = Item(
         id: id,
-        description: null,
-        quantity: null,
-        unitMeasurement: null,
-        unitPrice: null);
+        description: description,
+        quantity: quantity,
+        unitMeasurement: unitMeasurement,
+        unitPrice: unitPrice);
 
     items.add(item);
     i++;
   } while (i < itemsCount);
-
+  print("========== OUTPUT ==========");
   countItem(items).forEach((element) {
-    print(element);
+    print('''
+    ${element["item"].printItem()}
+    Quantity: ${element["count"]}
+    Total Price per item: ${element["item"].unitPrice}
+    Grand Total: ${element["count"] * element["item"].unitPrice}
+    ''');
   });
 }
